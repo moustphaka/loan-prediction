@@ -186,11 +186,68 @@ if page == "Accueil":
     stat_col2.metric("Taux d'acceptation", f"{approval_rate}%")
     stat_col3.metric("Montant moyen", f"{avg_loan}k€")
 
-    st.markdown("### Statistiques modèles")
+    st.markdown("## Objectif et workflow")
+    st.markdown(
+        "Ce modèle prédit l'approbation d'un prêt (`Loan_Status`) "
+        "à partir du profil client."
+    )
+    st.markdown(
+        "Le workflow suit les étapes classiques du notebook : charger, "
+        "inspecter, explorer, split, construire le pipeline, établir une "
+        "baseline, et entraîner le modèle."
+    )
+
+    st.markdown("### Étapes 1 à 7 du projet")
+    st.markdown(
+        "1. **Charger** : importer les données et vérifier leur structure.\n"
+        "2. **Inspecter** : identifier les colonnes, les valeurs manquantes "
+        "et les types.\n"
+        "3. **Explorer** : visualiser les distributions et relations clés.\n"
+        "4. **Split** : séparer train/test avec stratification pour garder la "
+        "même proportion de classes.\n"
+        "5. **Pipeline** : imputer, encoder et standardiser sans fuite de "
+        "données.\n"
+        "6. **Baseline** : comparer avec un DummyClassifier pour mesurer la "
+        "valeur ajoutée.\n"
+        "7. **Modèle** : entraîner un classificateur robuste et valider "
+        "ses performances."
+    )
+
+    st.markdown(
+        "### Variables clés"
+        "\n- `Credit_History` : le signal le plus fort pour l'acceptation "
+        "du prêt."
+        "\n- `ApplicantIncome`, `CoapplicantIncome`, `LoanAmount` : variables "
+        "numériques importantes."
+        "\n- `Education`, `Property_Area`, `Married` : variables de profil "
+        "client utiles pour la décision."
+    )
+
     status_counts = data["Loan_Status"].fillna("N").replace(
         {"Y": "Approuvé", "N": "Refusé"}
     )
-    st.bar_chart(status_counts.value_counts())
+    credit_counts = data["Credit_History"].fillna(0).map(
+        {1: "Historique bon", 0: "Historique mauvais"}
+    )
+
+    fig_col1, fig_col2 = st.columns(2, gap="large")
+    with fig_col1:
+        st.markdown("### Étape 3 : exploration — répartition des décisions")
+        st.bar_chart(status_counts.value_counts())
+    with fig_col2:
+        st.markdown("### Étape 3 : exploration — historique de crédit")
+        st.bar_chart(credit_counts.value_counts())
+
+    st.markdown("### Interprétation rapide")
+    st.markdown(
+        "- Le bon historique de crédit est souvent corrélé à l'acceptation "
+        "du prêt.\n"
+        "- Les revenus et le montant du prêt sont importants, mais "
+        "ils doivent être combinés avec d'autres variables pour une décision "
+        "fiable.\n"
+        "- Un pipeline de prétraitement robuste permet d'éviter les biais "
+        "et la fuite de données."
+    )
 
     col1, col2 = st.columns([2, 1], gap="large")
     with col1:
